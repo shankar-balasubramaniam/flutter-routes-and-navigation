@@ -43,7 +43,7 @@ class _YummyState extends State<Yummy> {
 
   late final _router = GoRouter(
     initialLocation: "/login",
-    // TODO: Add App Redirect
+    redirect: _appRedirect,
     routes: [
       GoRoute(
         path: "/login",
@@ -86,7 +86,23 @@ class _YummyState extends State<Yummy> {
     },
   );
 
-  // TODO: Add Redirect Handler
+  Future<String?> _appRedirect(
+      BuildContext context, GoRouterState state) async {
+    final loggedIn = await _auth.loggedIn;
+    final isOnLoginPage = state.matchedLocation == "/login";
+
+    // Go to /login if the user is not signed in
+    if (!loggedIn) {
+      return "/login";
+    }
+    // Go to root if the user is already signed in
+    else if (loggedIn && isOnLoginPage) {
+      return "/${YummyTab.home.value}";
+    }
+
+    // no redirect
+    return null;
+  }
 
   void changeThemeMode(bool useLightMode) {
     setState(() {
